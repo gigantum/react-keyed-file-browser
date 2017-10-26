@@ -733,11 +733,12 @@ class FileBrowser extends React.Component {
         {this.props.actions}
         <div className="rendered-file-browser" ref="browser">
           {this.props.showActionBar && this.renderActionBar(selectedItem)}
+          <div id="filebrowser-mask" className="FileBrowser__mask hidden" ref="filebrowser-mask"></div>
           <div className="files">
             {renderedFiles}
           </div>
         </div>
-        <div id="filebrowser-mask" className="FileBrowser__mask hidden" ref="filebrowser-mask"></div>
+
         {this.state.previewFile !== null && (
           <Detail
             file={this.state.previewFile}
