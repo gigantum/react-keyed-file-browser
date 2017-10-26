@@ -131,6 +131,10 @@ class FileBrowser extends React.Component {
     window.removeEventListener('click', this.handleGlobalClick);
   }
 
+  showMask(){
+    document.getElementByID('')
+  }
+
   // item manipulation
   renameFile(oldKey, newKey) {
     this.setState({
@@ -735,6 +739,7 @@ class FileBrowser extends React.Component {
             {renderedFiles}
           </div>
         </div>
+        <div id="filebrowser-mask" className="FileBrowser__mask hidden" ref="filebrowser-mask"></div>
         {this.state.previewFile !== null && (
           <Detail
             file={this.state.previewFile}

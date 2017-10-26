@@ -24,7 +24,7 @@ const SEARCH_RESULTS_PER_PAGE = 20;
 
 function getItemProps(file, browserProps) {
   return {
-    key: `file-${file.key}`,
+    key: `file-${this.keyPrefix}-${file.key}`,
     fileKey: file.key,
     isSelected: (file.key == browserProps.selection),
     isOpen: (
@@ -344,6 +344,7 @@ class FileBrowser extends React.Component {
   getBrowserProps() {
     return {
       // browser config
+      keyPrefix: this.props.keyPrefix,
       nestChildren: this.props.nestChildren,
       folderRenderer: this.props.folderRenderer,
       fileRenderer: this.props.fileRenderer,
@@ -565,7 +566,6 @@ class FileBrowser extends React.Component {
       fileKey: '',
       browserProps: browserProps,
     };
-
     var files = this.props.files.concat([]);
     if (this.state.activeAction === 'createFolder') {
       files.push({
@@ -737,6 +737,7 @@ class FileBrowser extends React.Component {
             {renderedFiles}
           </div>
         </div>
+        <div id="filebrowser-mask" className="FileBrowser__mask hidden" ref="filebrowser-mask"></div>
         {this.state.previewFile !== null && (
           <Detail
             file={this.state.previewFile}
