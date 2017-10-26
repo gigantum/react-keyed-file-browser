@@ -10,7 +10,7 @@ import prettyFileIcons from 'pretty-file-icons'
 class ListFile extends BaseFile {
   render() {
 
-    var icon = (<i>{prettyFileIcons.getIcon(this.props.thumbnail_url)}</i>)
+    var icon = (<span className="FileIcon">{prettyFileIcons.getIcon(this.props.thumbnail_url)}</span>)
     var inAction = (this.props.isDragging || this.props.action);
 
     var name;
