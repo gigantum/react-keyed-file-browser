@@ -36,7 +36,7 @@ class TableFile extends BaseFile {
   render() {
 
 
-    var icon = (<i className={fileIconsJs.getClass(this.props.name)}></i>)
+    var icon = (<span className={'FileBrowser__icon ' + fileIconsJs.getClass(this.props.name)}></span>)
 
 
     var inAction = (this.props.isDragging || this.props.action);

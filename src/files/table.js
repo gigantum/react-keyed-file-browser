@@ -35,13 +35,13 @@ class TableFile extends BaseFile {
   render() {
     var icon;
     if (this.isImage()) {
-      icon = (<i className="fa fa-file-image-o" aria-hidden="true"></i>);
+      icon = (<span className="fa fa-file-image-o" aria-hidden="true"></span>);
     }
     else if (this.isPdf()) {
-      icon = (<i className="fa fa-file-pdf-o" aria-hidden="true"></i>);
+      icon = (<span className="fa fa-file-pdf-o" aria-hidden="true"></span>);
     }
     else {
-      icon = (<i className="fa fa-file-o" aria-hidden="true"></i>);
+      icon = (<span className="fa fa-file-o" aria-hidden="true"></span>);
     }
 
     var inAction = (this.props.isDragging || this.props.action);
