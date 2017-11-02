@@ -122,7 +122,7 @@ class TableFile extends BaseFile {
         </td>
         <td className="size">{file_size(this.props.size)}</td>
         <td className="modified">
-          {typeof this.props.modified === 'undefined' ? '-' : Moment(this.props.modified, 'x').fromNow()}
+          {typeof this.props.modified === 'undefined' ? '-' : Moment((this.props.modified * 1000), 'x').fromNow()}
         </td>
       </tr>
     );
