@@ -83,7 +83,8 @@ class ListFile extends BaseFile {
       if (!this.props.isRenaming && !this.props.isDeleting) {
         modified = (
           <span className="modified text-muted">
-            Last modified: {Moment(this.props.modified).fromNow()}
+
+            Last modified: {Moment((this.props.modified * 1000), 'x').fromNow()}
           </span>
         );
       }

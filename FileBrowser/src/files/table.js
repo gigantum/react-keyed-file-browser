@@ -36,7 +36,7 @@ class TableFile extends BaseFile {
   render() {
 
 
-    var icon = (<i className={fileIconsJs.getClass(this.props.name)}></i>)
+    var icon = (<span className={'FileBrowser__icon ' + fileIconsJs.getClass(this.props.name)}></span>)
 
 
     var inAction = (this.props.isDragging || this.props.action);
@@ -122,7 +122,7 @@ class TableFile extends BaseFile {
         </td>
         <td className="size">{file_size(this.props.size)}</td>
         <td className="modified">
-          {typeof this.props.modified === 'undefined' ? '-' : Moment(this.props.modified, 'x').fromNow()}
+          {typeof this.props.modified === 'undefined' ? '-' : Moment((this.props.modified * 1000), 'x').fromNow()}
         </td>
       </tr>
     );

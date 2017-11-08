@@ -102,6 +102,8 @@ class FileBrowser extends React.Component {
     this.handleActionBarRenameClick = this.handleActionBarRenameClick.bind(this);
     this.handleActionBarDeleteClick = this.handleActionBarDeleteClick.bind(this);
     this.handleActionBarAddFolderClick = this.handleActionBarAddFolderClick.bind(this);
+    this.handleFileFavoriting = this.handleFileFavoriting.bind(this);
+    this.handleFileDuplication = this.handleFileDuplication.bind(this);
     // detail
     this.closeDetail = this.closeDetail.bind(this);
 
@@ -326,6 +328,15 @@ class FileBrowser extends React.Component {
       return state;
     });
   }
+
+  handleFileFavoriting(event){
+    event.preventDefault();
+  }
+
+  handleFileDuplication(event){
+    event.preventDefault();
+  }
+
   handleFilterChange(event) {
     var newValue = this.refs.filter.value;
     this.setState(state => {
@@ -477,6 +488,42 @@ class FileBrowser extends React.Component {
               >
                 <i className="fa fa-i-cursor" aria-hidden="true"></i>
                 &nbsp;Rename
+              </a>
+            </li>
+          );
+        }
+
+
+        if (
+          selectedItem.keyDerived
+          && (
+            (!selectionIsFolder)
+          )
+        ) {
+          actions.push(
+            <li key="action-duplicate">
+              <a
+                className="btn btn-primary btn-sm"
+                onClick={this.handleFileDuplication}
+                href="#"
+                role="button"
+              >
+                <i className="fa fa-clone" aria-hidden="true"></i>
+                &nbsp;Duplicate
+              </a>
+            </li>
+          );
+
+          actions.push(
+            <li key="action-favorite">
+              <a
+                className="btn btn-primary btn-sm"
+                onClick={this.handleFileFavoriting}
+                href="#"
+                role="button"
+              >
+                <i className="fa fa-star" aria-hidden="true"></i>
+                &nbsp;Favorite
               </a>
             </li>
           );
