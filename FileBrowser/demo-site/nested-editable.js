@@ -67,6 +67,7 @@ class NestedEditableDemo extends React.Component {
     });
   }
   handleCreateFiles(files, prefix) {
+    console.log(files, prefix)
     this.setState(state => {
       var newFiles = files.map((file) => {
         var newKey = prefix;

@@ -103,6 +103,7 @@ class TableFile extends BaseFile {
     if (typeof this.props.browserProps.moveFile === 'function') {
       draggable = this.props.connectDragPreview(draggable);
     }
+    const modifier = (this.props.modified === 0) ? ' modified grey' : ' modified'
 
     var row = (
       <tr
@@ -111,7 +112,7 @@ class TableFile extends BaseFile {
           dragging: (this.props.isDragging),
           dragover: (this.props.isOver),
           selected: (this.props.isSelected),
-        })}
+        }) + modifier}
         onClick={this.handleItemClick}
         onDoubleClick={this.handleItemDoubleClick}
       >
@@ -120,6 +121,7 @@ class TableFile extends BaseFile {
             {draggable}
           </div>
         </td>
+        <td width="30"><div className={this.props.isFavorite ? 'Favorite__star--file' : ''}></div></td>
         <td className="size">{file_size(this.props.size)}</td>
         <td className="modified">
           {typeof this.props.modified === 'undefined' ? '-' : Moment((this.props.modified * 1000), 'x').fromNow()}

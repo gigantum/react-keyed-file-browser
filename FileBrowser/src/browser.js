@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 // drag and drop
 import HTML5Backend from 'react-dnd-html5-backend'
 import { DragDropContext } from 'react-dnd'
-
+import {getFilesFromDragEvent} from "html-dir-content";
 // base renderers
 import BaseFolder from './base-folder.js'
 import { BaseFolderConnectors } from './base-folder.js'
@@ -22,7 +22,24 @@ import prettyFileIcons from 'pretty-file-icons'
 
 const SEARCH_RESULTS_PER_PAGE = 20;
 
+
+// const backend = (manager) => {
+//   const backend = HTML5Backend(manager);
+//   const orig = backend.handleTopDropCapture;
+//   backend.handleTopDropCapture = function(event) {
+//     console.log(event, event.dataTransfer.items)
+//     event.dataTransfer.getFilesAndDirectories().then(function(filesAndDirs) {
+//       console.log(filesAndDirs)
+//     });
+//     backend.currentNativeSource.item.items = event.dataTransfer.items;
+//     return orig(event);
+//   }
+//   return backend;
+// }
+
+
 function getItemProps(file, browserProps) {
+  //console.log(`file-${this.keyPrefix}-${file.key}`)
   return {
     key: `file-${this.keyPrefix}-${file.key}`,
     fileKey: file.key,
@@ -243,10 +260,12 @@ class FileBrowser extends React.Component {
     });
   }
   preview(file) {
-    this.setState(state => {
-      state.previewFile = file;
-      return state;
-    });
+    // this.setState(state => {
+    //   state.previewFile = file;
+    //   return state;
+    // });
+    this.props.openDetailPanel(file)
+
   }
   closeDetail() {
     this.setState(state => {
@@ -263,6 +282,7 @@ class FileBrowser extends React.Component {
     });
   }
   toggleFolder(folderKey) {
+
     this.setState(state => {
       if (folderKey in state.openFolders)
         delete state.openFolders[folderKey];
@@ -270,6 +290,7 @@ class FileBrowser extends React.Component {
         state.openFolders[folderKey] = true;
       return state;
     });
+    this.props.toggleFolder(folderKey);
   }
   openFolder(folderKey) {
     this.setState(state => {
@@ -314,6 +335,7 @@ class FileBrowser extends React.Component {
         addKey += '/';
       }
     }
+
     addKey += '__new__/';
     this.setState(state => {
       state.actionTarget = addKey;
@@ -331,6 +353,8 @@ class FileBrowser extends React.Component {
 
   handleFileFavoriting(event){
     event.preventDefault();
+
+    this.props.onFileFavoriting(this.state.selection)
   }
 
   handleFileDuplication(event){
@@ -614,6 +638,7 @@ class FileBrowser extends React.Component {
       browserProps: browserProps,
     };
     var files = this.props.files.concat([]);
+
     if (this.state.activeAction === 'createFolder') {
       files.push({
         key: this.state.actionTarget,
@@ -781,7 +806,7 @@ class FileBrowser extends React.Component {
         <div className="rendered-file-browser" ref="browser">
           {this.props.showActionBar && this.renderActionBar(selectedItem)}
           <div id="filebrowser-mask" className="FileBrowser__mask hidden" ref="filebrowser-mask"></div>
-          <div className="files">
+          <div id={this.props.connectionKey} className="files">
             {renderedFiles}
           </div>
         </div>
