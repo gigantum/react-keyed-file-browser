@@ -137,7 +137,7 @@ export default DragSource(
   BaseFileConnectors.dragCollect
 )(
   DropTarget(
-    ['file', 'folder', NativeTypes.FILE],
+    ['file', 'folder', NativeTypes.FILE,  NativeTypes.FOLDER],
     BaseFileConnectors.targetSource,
     BaseFileConnectors.targetCollect
   )(

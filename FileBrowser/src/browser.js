@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 // drag and drop
 import HTML5Backend from 'react-dnd-html5-backend'
 import { DragDropContext } from 'react-dnd'
-import {getFilesFromDragEvent} from "html-dir-content";
+import {getFilesFromDragEvent, getFiles} from "./html-dir-content";
 // base renderers
 import BaseFolder from './base-folder.js'
 import { BaseFolderConnectors } from './base-folder.js'
@@ -23,18 +23,32 @@ import prettyFileIcons from 'pretty-file-icons'
 const SEARCH_RESULTS_PER_PAGE = 20;
 
 
+const backend = (manager: Object) => {
+    const backend = HTML5Backend(manager),
+        orgTopDropCapture = backend.handleTopDropCapture;
+
+    backend.handleTopDropCapture = (e) => {
+      console.log(e)
+        let datatransfer = e.dataTransfer.getData('data');
+        console.log(datatransfer)
+        orgTopDropCapture.call(backend, e);
+        backend.currentNativeSource.item.dirContent = getFilesFromDragEvent(e, {recursive: true}); //returns a promise
+    };
+
+    return backend;
+}
 // const backend = (manager) => {
-//   const backend = HTML5Backend(manager);
-//   const orig = backend.handleTopDropCapture;
-//   backend.handleTopDropCapture = function(event) {
-//     console.log(event, event.dataTransfer.items)
-//     event.dataTransfer.getFilesAndDirectories().then(function(filesAndDirs) {
-//       console.log(filesAndDirs)
-//     });
-//     backend.currentNativeSource.item.items = event.dataTransfer.items;
+//   const backendInner = HTML5Backend(manager);
+//   const orig = backendInner.handleTopDropCapture;
+//   backendInner.handleTopDropCapture = function(event) {
+//     console.log(event, event.dataTransfer.items, manager)
+//     // event.dataTransfer.then(function(filesAndDirs) {
+//     //   console.log(filesAndDirs)
+//     // });
+//     backendInner.currentNativeSource.item.items = event.dataTransfer.items;
 //     return orig(event);
 //   }
-//   return backend;
+//   return backendInner;
 // }
 
 
@@ -208,6 +222,7 @@ class FileBrowser extends React.Component {
     });
   }
   createFiles(files, prefix) {
+    console.log(files, prefix)
     this.setState(state => {
       state.openFolders = {
         ...state.openFolders,
@@ -868,6 +883,6 @@ FileBrowser.PropTypes = {
   onDeleteFile: PropTypes.func,
 };
 
-export default DragDropContext(HTML5Backend)(FileBrowser)
+export default DragDropContext(backend)(FileBrowser)
 export { BaseFile, BaseFileConnectors }
 export { BaseFolder, BaseFolderConnectors }
