@@ -93,6 +93,7 @@ class TableFolder extends BaseFolder {
         </td>
         <td></td>
         <td></td>
+        <td></td>
       </tr>
     );
 

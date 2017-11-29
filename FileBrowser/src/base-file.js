@@ -76,7 +76,7 @@ class BaseFile extends React.Component {
       url: this.props.url,
       name: this.getName(),
       key: this.props.fileKey,
-      extension: this.getExtension(),
+      extension: this.getExtension()
     });
   }
   handleItemClick(event) {
