@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 // drag and drop
 import HTML5Backend from 'react-dnd-html5-backend'
 import { DragDropContext } from 'react-dnd'
-import {getFilesFromDragEvent} from "html-dir-content";
 // base renderers
 import BaseFolder from './base-folder.js'
 import { BaseFolderConnectors } from './base-folder.js'
