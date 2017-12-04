@@ -67,12 +67,12 @@ var getFileList = function getFileList(root, options) {
     return root && level < options.bail && root.isDirectory && root.createReader ? new Promise(function (resolve) {
         root.createReader().readEntries(function (entries) {
             return Promise.all(entries.map(function (entry) {
-                console.log(entry)
+        
 								var file = getEntryData(entry, options, level)
 
                 return file;
             })).then(function (results) {
-  
+
                 return resolve(results);
             });
         }, //flatten the results

@@ -28,32 +28,21 @@ const backend = (manager: Object) => {
         orgTopDropCapture = backend.handleTopDropCapture;
 
     backend.handleTopDropCapture = (e) => {
-      console.log(e)
+
         let datatransfer = e.dataTransfer.getData('data');
-        console.log(datatransfer)
-        orgTopDropCapture.call(backend, e);
-        backend.currentNativeSource.item.dirContent = getFilesFromDragEvent(e, {recursive: true}); //returns a promise
+
+        if(backend.currentNativeSource){
+          orgTopDropCapture.call(backend, e);
+          backend.currentNativeSource.item.dirContent = getFilesFromDragEvent(e, {recursive: true}); //returns a promise
+        }
     };
 
     return backend;
 }
-// const backend = (manager) => {
-//   const backendInner = HTML5Backend(manager);
-//   const orig = backendInner.handleTopDropCapture;
-//   backendInner.handleTopDropCapture = function(event) {
-//     console.log(event, event.dataTransfer.items, manager)
-//     // event.dataTransfer.then(function(filesAndDirs) {
-//     //   console.log(filesAndDirs)
-//     // });
-//     backendInner.currentNativeSource.item.items = event.dataTransfer.items;
-//     return orig(event);
-//   }
-//   return backendInner;
-// }
 
 
 function getItemProps(file, browserProps) {
-  //console.log(`file-${this.keyPrefix}-${file.key}`)
+
   return {
     key: `file-${this.keyPrefix}-${file.key}`,
     fileKey: file.key,
@@ -222,7 +211,7 @@ class FileBrowser extends React.Component {
     });
   }
   createFiles(files, prefix) {
-    console.log(files, prefix)
+
     this.setState(state => {
       state.openFolders = {
         ...state.openFolders,

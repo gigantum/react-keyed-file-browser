@@ -177,17 +177,20 @@ const dragSource = {
   },
 
   endDrag(props, monitor, component) {
+
     if (!monitor.didDrop())
       return;
-    console.log(props, monitor)
+
     const item = monitor.getItem();
     const dropResult = monitor.getDropResult();
+
     var fileNameParts = props.fileKey.split('/');
     var fileName = fileNameParts[fileNameParts.length - 1];
     var newKey = `${dropResult.path ? dropResult.path + '/' : ''}${fileName}`;
-    if (newKey != props.fileKey && props.browserProps.renameFile) {
+
+    if ((dropResult.newKey != props.fileKey) && props.browserProps.renameFile) {
       props.browserProps.openFolder(dropResult.path + '/');
-      props.browserProps.renameFile(props.fileKey, newKey);
+      props.browserProps.renameFile(props.fileKey, dropResult.newKey);
     }
   },
 };
@@ -203,21 +206,30 @@ function dragCollect(connect, monitor) {
 const targetSource = {
   drop(props, monitor) {
     const dndItem = monitor.getItem();
-    console.log(dndItem)
     // if (monitor.didDrop()) {
     //      return;
     // }
 
     if (dndItem) {
-          if (dndItem.urls && dndItem.urls.length) {
-              //handle urls
+          if (!dndItem.dirContent) {
+              var fileKey = props.browserProps.selection;
+
+              var fileNameParts = fileKey.split('/')
+              var fileName = fileNameParts[fileNameParts.length - 1];
+              var newKey = props.newKey || props.fileKey;
+              var newPath = newKey +  fileName
+
+              return {
+                newKey: newPath,
+                fileKey: props.fileKey
+              };
           }
           else {
               dndItem.dirContent.then((files: Object[]) => {
                   if (files.length){
                     var key = props.newKey || props.fileKey;
                     var path = key.substr(0, key.lastIndexOf('/') || key.length);
-                    console.log(files)
+
                      // handle dragged folder(s)
                      if (files && props.browserProps.createFiles) {
                           props.browserProps.createFiles(files, path + '/');
@@ -235,7 +247,7 @@ const targetSource = {
                        if (item.files && props.browserProps.createFiles) {
                          props.browserProps.createFiles(item.files, path + '/');
                        }
-                       console.log(props, monitor)
+
                        return {
                          path: path
                        };
