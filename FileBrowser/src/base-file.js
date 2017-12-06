@@ -206,9 +206,6 @@ function dragCollect(connect, monitor) {
 const targetSource = {
   drop(props, monitor) {
     const dndItem = monitor.getItem();
-    // if (monitor.didDrop()) {
-    //      return;
-    // }
 
     if (dndItem) {
           if (!dndItem.dirContent) {
