@@ -211,7 +211,7 @@ class FileBrowser extends React.Component {
     });
   }
   createFiles(files, prefix) {
-
+    var fixedPrefix = (prefix === '/') ? '': prefix
     this.setState(state => {
       state.openFolders = {
         ...state.openFolders,
@@ -222,7 +222,7 @@ class FileBrowser extends React.Component {
       state.selection = null;
       return state;
     }, () => {
-      this.props.onCreateFiles(files, prefix);
+      this.props.onCreateFiles(files, fixedPrefix);
     });
   }
   createFolder(key) {
@@ -697,21 +697,36 @@ class FileBrowser extends React.Component {
     switch (this.props.renderStyle) {
       case 'table':
         var contents = this.renderFiles(files, 0);
+
         if (!contents.length) {
-          if (this.state.nameFilter) {
-            contents = (<tr>
-              <td colSpan="100">
-                No files matching "{this.state.nameFilter}".
-              </td>
-            </tr>);
-          }
-          else {
-            contents = (<tr>
-              <td colSpan="100">
-                No files.
-              </td>
-            </tr>);
-          }
+          //if (this.state.nameFilter) {
+            var file = {
+            id: 'id',
+            isDir: false,
+            isFavorite: false,
+            modifiedAt: 0,
+            key: 'No files',
+            size: 0
+            }
+            var thisItemProps = {
+              ...browserProps.getItemProps(file, browserProps),
+              depth: 0,
+            };
+            contents = (
+              <this.props.fileRenderer
+                {...file}
+                {...thisItemProps}
+                browserProps={browserProps}
+              />
+            )
+          //}
+          // else {
+          //   contents = (<tr>
+          //     <td colSpan="100">
+          //       No files.
+          //     </td>
+          //   </tr>);
+          // }
         }
         else {
           if (this.state.nameFilter) {
@@ -809,7 +824,7 @@ class FileBrowser extends React.Component {
         {this.props.actions}
         <div className="rendered-file-browser" ref="browser">
           {this.props.showActionBar && this.renderActionBar(selectedItem)}
-          <div id="filebrowser-mask" className="FileBrowser__mask hidden" ref="filebrowser-mask"></div>
+
           <div id={this.props.connectionKey} className="files">
             {renderedFiles}
           </div>

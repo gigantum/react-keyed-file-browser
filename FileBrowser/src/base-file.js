@@ -210,7 +210,7 @@ const targetSource = {
     if (dndItem) {
           if (!dndItem.dirContent) {
               var fileKey = props.browserProps.selection;
-
+      
               var fileNameParts = fileKey.split('/')
               var fileName = fileNameParts[fileNameParts.length - 1];
               var newKey = props.newKey || props.fileKey;
