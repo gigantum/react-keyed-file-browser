@@ -177,17 +177,20 @@ const dragSource = {
   },
 
   endDrag(props, monitor, component) {
+
     if (!monitor.didDrop())
       return;
 
     const item = monitor.getItem();
     const dropResult = monitor.getDropResult();
+
     var fileNameParts = props.fileKey.split('/');
     var fileName = fileNameParts[fileNameParts.length - 1];
     var newKey = `${dropResult.path ? dropResult.path + '/' : ''}${fileName}`;
-    if (newKey != props.fileKey && props.browserProps.renameFile) {
+
+    if ((dropResult.newKey != props.fileKey) && props.browserProps.renameFile) {
       props.browserProps.openFolder(dropResult.path + '/');
-      props.browserProps.renameFile(props.fileKey, newKey);
+      props.browserProps.renameFile(props.fileKey, dropResult.newKey);
     }
   },
 };
@@ -202,18 +205,55 @@ function dragCollect(connect, monitor) {
 
 const targetSource = {
   drop(props, monitor) {
-    if (monitor.didDrop()) {
-      return;
-    }
-    var key = props.newKey || props.fileKey;
-    var path = key.substr(0, key.lastIndexOf('/') || key.length);
-    var item = monitor.getItem();
-    if (item.files && props.browserProps.createFiles) {
-      props.browserProps.createFiles(item.files, path + '/');
-    }
-    return {
-      path: path,
-    };
+    const dndItem = monitor.getItem();
+
+    if (dndItem) {
+          if (!dndItem.dirContent) {
+              var fileKey = props.browserProps.selection;
+
+              var fileNameParts = fileKey.split('/')
+              var fileName = fileNameParts[fileNameParts.length - 1];
+              var newKey = props.newKey || props.fileKey;
+              var newPath = newKey +  fileName
+
+              return {
+                newKey: newPath,
+                fileKey: props.fileKey
+              };
+          }
+          else {
+              dndItem.dirContent.then((files: Object[]) => {
+                  if (files.length){
+                    var key = props.newKey || props.fileKey;
+                    var path = key.substr(0, key.lastIndexOf('/') || key.length);
+
+                     // handle dragged folder(s)
+                     if (files && props.browserProps.createFiles) {
+                          props.browserProps.createFiles(files, path + '/');
+                        }
+                     return{
+                       files: files,
+                       path: path
+                     }
+                  }
+                  else if (dndItem.files && dndItem.files.length){
+                       //handle dragged files
+                       var key = props.newKey || props.fileKey;
+                       var path = key.substr(0, key.lastIndexOf('/') || key.length);
+                       var item = monitor.getItem();
+                       if (item.files && props.browserProps.createFiles) {
+                         props.browserProps.createFiles(item.files, path + '/');
+                       }
+
+                       return {
+                         path: path
+                       };
+                  }
+              });
+          }
+      }
+
+
   },
 };
 

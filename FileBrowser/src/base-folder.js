@@ -169,19 +169,16 @@ const dragSource = {
 
     const item = monitor.getItem();
     const dropResult = monitor.getDropResult();
+    const oldKey = item.key;
+    const oldKeyFolders =  oldKey.split('/');
 
-    var fileNameParts = props.fileKey.split('/');
-    var folderName = fileNameParts[fileNameParts.length - 2];
-    var folderPath = props.fileKey.substr(0, props.fileKey.length - (folderName.length + 2));
 
-    var newKey = `${dropResult.path ? dropResult.path + '/' : ''}${folderName}/`;
-    // abort of the new folder name contains itself
-    if (newKey.substr(0, props.fileKey.length) === props.fileKey)
-      return;
+    var folder = (oldKeyFolders[oldKeyFolders.length - 1] === "") ? oldKeyFolders[oldKeyFolders.length - 2] : oldKeyFolders[oldKeyFolders.length - 1];
+    var newKey = dropResult.fileKey + folder + '/'
 
-    if (newKey != props.fileKey && props.browserProps.renameFolder) {
-      props.browserProps.openFolder(dropResult.path + '/');
-      props.browserProps.renameFolder(props.fileKey, newKey);
+    if (dropResult.fileKey !== item.key && props.browserProps.renameFolder) {
+      props.browserProps.openFolder(item.key);
+      props.browserProps.renameFolder(oldKey, newKey);
     }
   },
 };
