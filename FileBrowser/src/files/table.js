@@ -3,6 +3,7 @@ import Moment from 'moment'
 import ClassNames from 'classnames'
 import { DragSource, DropTarget } from 'react-dnd'
 import { NativeTypes } from 'react-dnd-html5-backend'
+import fileIconsJs from 'file-icons-js'
 
 import BaseFile from './../base-file.js'
 import { BaseFileConnectors } from './../base-file.js'
@@ -33,16 +34,10 @@ function file_size(size) {
 
 class TableFile extends BaseFile {
   render() {
-    var icon;
-    if (this.isImage()) {
-      icon = (<span className="fa fa-file-image-o" aria-hidden="true"></span>);
-    }
-    else if (this.isPdf()) {
-      icon = (<span className="fa fa-file-pdf-o" aria-hidden="true"></span>);
-    }
-    else {
-      icon = (<span className="fa fa-file-o" aria-hidden="true"></span>);
-    }
+
+
+    var icon = (<span className={'FileBrowser__icon ' + fileIconsJs.getClass(this.props.name)}></span>)
+
 
     var inAction = (this.props.isDragging || this.props.action);
 
@@ -108,6 +103,7 @@ class TableFile extends BaseFile {
     if (typeof this.props.browserProps.moveFile === 'function') {
       draggable = this.props.connectDragPreview(draggable);
     }
+    const modifier = (this.props.modified === 0) ? ' modified grey' : ' modified'
 
     var row = (
       <tr
@@ -116,7 +112,7 @@ class TableFile extends BaseFile {
           dragging: (this.props.isDragging),
           dragover: (this.props.isOver),
           selected: (this.props.isSelected),
-        })}
+        }) + modifier}
         onClick={this.handleItemClick}
         onDoubleClick={this.handleItemDoubleClick}
       >
@@ -125,9 +121,10 @@ class TableFile extends BaseFile {
             {draggable}
           </div>
         </td>
+        <td width="30"><div className={this.props.isFavorite ? 'Favorite__star--file' : ''}></div></td>
         <td className="size">{file_size(this.props.size)}</td>
         <td className="modified">
-          {typeof this.props.modified === 'undefined' ? '-' : Moment(this.props.modified, 'x').fromNow()}
+          {typeof this.props.modified === 'undefined' ? '-' : Moment((this.props.modified * 1000), 'x').fromNow()}
         </td>
       </tr>
     );

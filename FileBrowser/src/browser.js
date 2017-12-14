@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 // drag and drop
 import HTML5Backend from 'react-dnd-html5-backend'
 import { DragDropContext } from 'react-dnd'
-
+import {getFilesFromDragEvent, getFiles} from "./html-dir-content";
 // base renderers
 import BaseFolder from './base-folder.js'
 import { BaseFolderConnectors } from './base-folder.js'
@@ -18,11 +18,33 @@ import TableFile from './files/table.js'
 import GroupByFolder from './groupers/by-folder.js'
 import SortByName from './sorters/by-name.js'
 
+import prettyFileIcons from 'pretty-file-icons'
+
 const SEARCH_RESULTS_PER_PAGE = 20;
 
+
+const backend = (manager: Object) => {
+    const backend = HTML5Backend(manager),
+        orgTopDropCapture = backend.handleTopDropCapture;
+
+    backend.handleTopDropCapture = (e) => {
+
+        let datatransfer = e.dataTransfer.getData('data');
+
+        if(backend.currentNativeSource){
+          orgTopDropCapture.call(backend, e);
+          backend.currentNativeSource.item.dirContent = getFilesFromDragEvent(e, {recursive: true}); //returns a promise
+        }
+    };
+
+    return backend;
+}
+
+
 function getItemProps(file, browserProps) {
+
   return {
-    key: `file-${file.key}`,
+    key: `file-${this.keyPrefix}-${file.key}`,
     fileKey: file.key,
     isSelected: (file.key == browserProps.selection),
     isOpen: (
@@ -81,27 +103,29 @@ class FileBrowser extends React.Component {
 
     this.handleGlobalClick = this.handleGlobalClick.bind(this);
     // browser manipulation
-    this.select = this.select.bind(this)
-    this.openFolder = this.openFolder.bind(this)
-    this.toggleFolder = this.toggleFolder.bind(this)
-    this.beginAction = this.beginAction.bind(this)
-    this.endAction = this.endAction.bind(this)
-    this.preview = this.preview.bind(this)
+    this.select = this.select.bind(this);
+    this.openFolder = this.openFolder.bind(this);
+    this.toggleFolder = this.toggleFolder.bind(this);
+    this.beginAction = this.beginAction.bind(this);
+    this.endAction = this.endAction.bind(this);
+    this.preview = this.preview.bind(this);
     // file manipulation
-    this.renameFile = this.renameFile.bind(this)
-    this.renameFolder = this.renameFolder.bind(this)
-    this.moveFile = this.moveFile.bind(this)
-    this.moveFolder = this.moveFolder.bind(this)
-    this.createFiles = this.createFiles.bind(this)
-    this.createFolder = this.createFolder.bind(this)
-    this.deleteFile = this.deleteFile.bind(this)
-    this.deleteFolder = this.deleteFolder.bind(this)
+    this.renameFile = this.renameFile.bind(this);
+    this.renameFolder = this.renameFolder.bind(this);
+    this.moveFile = this.moveFile.bind(this);
+    this.moveFolder = this.moveFolder.bind(this);
+    this.createFiles = this.createFiles.bind(this);
+    this.createFolder = this.createFolder.bind(this);
+    this.deleteFile = this.deleteFile.bind(this);
+    this.deleteFolder = this.deleteFolder.bind(this);
     // action bar
-    this.handleActionBarRenameClick = this.handleActionBarRenameClick.bind(this)
-    this.handleActionBarDeleteClick = this.handleActionBarDeleteClick.bind(this)
-    this.handleActionBarAddFolderClick = this.handleActionBarAddFolderClick.bind(this)
+    this.handleActionBarRenameClick = this.handleActionBarRenameClick.bind(this);
+    this.handleActionBarDeleteClick = this.handleActionBarDeleteClick.bind(this);
+    this.handleActionBarAddFolderClick = this.handleActionBarAddFolderClick.bind(this);
+    this.handleFileFavoriting = this.handleFileFavoriting.bind(this);
+    this.handleFileDuplication = this.handleFileDuplication.bind(this);
     // detail
-    this.closeDetail = this.closeDetail.bind(this)
+    this.closeDetail = this.closeDetail.bind(this);
 
     this.state = {
       ...this.state,
@@ -129,10 +153,6 @@ class FileBrowser extends React.Component {
   }
   componentWillUnmount() {
     window.removeEventListener('click', this.handleGlobalClick);
-  }
-
-  showMask(){
-    document.getElementByID('')
   }
 
   // item manipulation
@@ -191,6 +211,7 @@ class FileBrowser extends React.Component {
     });
   }
   createFiles(files, prefix) {
+    var fixedPrefix = (prefix === '/') ? '': prefix
     this.setState(state => {
       state.openFolders = {
         ...state.openFolders,
@@ -201,7 +222,7 @@ class FileBrowser extends React.Component {
       state.selection = null;
       return state;
     }, () => {
-      this.props.onCreateFiles(files, prefix);
+      this.props.onCreateFiles(files, fixedPrefix);
     });
   }
   createFolder(key) {
@@ -243,10 +264,12 @@ class FileBrowser extends React.Component {
     });
   }
   preview(file) {
-    this.setState(state => {
-      state.previewFile = file;
-      return state;
-    });
+    // this.setState(state => {
+    //   state.previewFile = file;
+    //   return state;
+    // });
+    this.props.openDetailPanel(file)
+
   }
   closeDetail() {
     this.setState(state => {
@@ -263,6 +286,7 @@ class FileBrowser extends React.Component {
     });
   }
   toggleFolder(folderKey) {
+
     this.setState(state => {
       if (folderKey in state.openFolders)
         delete state.openFolders[folderKey];
@@ -270,6 +294,7 @@ class FileBrowser extends React.Component {
         state.openFolders[folderKey] = true;
       return state;
     });
+    this.props.toggleFolder(folderKey);
   }
   openFolder(folderKey) {
     this.setState(state => {
@@ -314,6 +339,7 @@ class FileBrowser extends React.Component {
         addKey += '/';
       }
     }
+
     addKey += '__new__/';
     this.setState(state => {
       state.actionTarget = addKey;
@@ -328,6 +354,17 @@ class FileBrowser extends React.Component {
       return state;
     });
   }
+
+  handleFileFavoriting(event){
+    event.preventDefault();
+
+    this.props.onFileFavoriting(this.state.selection)
+  }
+
+  handleFileDuplication(event){
+    event.preventDefault();
+  }
+
   handleFilterChange(event) {
     var newValue = this.refs.filter.value;
     this.setState(state => {
@@ -346,6 +383,7 @@ class FileBrowser extends React.Component {
   getBrowserProps() {
     return {
       // browser config
+      keyPrefix: this.props.keyPrefix,
       nestChildren: this.props.nestChildren,
       folderRenderer: this.props.folderRenderer,
       fileRenderer: this.props.fileRenderer,
@@ -415,7 +453,7 @@ class FileBrowser extends React.Component {
         }
         actions = (
           <div className="item-actions">
-            {/* <LoadingSpinner /> {actionText} */}
+            {/*<LoadingSpinner /> {actionText}*/}
           </div>
         );
       }
@@ -478,6 +516,42 @@ class FileBrowser extends React.Component {
               >
                 <i className="fa fa-i-cursor" aria-hidden="true"></i>
                 &nbsp;Rename
+              </a>
+            </li>
+          );
+        }
+
+
+        if (
+          selectedItem.keyDerived
+          && (
+            (!selectionIsFolder)
+          )
+        ) {
+          actions.push(
+            <li key="action-duplicate">
+              <a
+                className="btn btn-primary btn-sm"
+                onClick={this.handleFileDuplication}
+                href="#"
+                role="button"
+              >
+                <i className="fa fa-clone" aria-hidden="true"></i>
+                &nbsp;Duplicate
+              </a>
+            </li>
+          );
+
+          actions.push(
+            <li key="action-favorite">
+              <a
+                className="btn btn-primary btn-sm"
+                onClick={this.handleFileFavoriting}
+                href="#"
+                role="button"
+              >
+                <i className="fa fa-star" aria-hidden="true"></i>
+                &nbsp;Favorite
               </a>
             </li>
           );
@@ -567,8 +641,8 @@ class FileBrowser extends React.Component {
       fileKey: '',
       browserProps: browserProps,
     };
-
     var files = this.props.files.concat([]);
+
     if (this.state.activeAction === 'createFolder') {
       files.push({
         key: this.state.actionTarget,
@@ -623,21 +697,36 @@ class FileBrowser extends React.Component {
     switch (this.props.renderStyle) {
       case 'table':
         var contents = this.renderFiles(files, 0);
+
         if (!contents.length) {
-          if (this.state.nameFilter) {
-            contents = (<tr>
-              <td colSpan="100">
-                No files matching "{this.state.nameFilter}".
-              </td>
-            </tr>);
-          }
-          else {
-            contents = (<tr>
-              <td colSpan="100">
-                No files.
-              </td>
-            </tr>);
-          }
+          //if (this.state.nameFilter) {
+            var file = {
+            id: 'id',
+            isDir: false,
+            isFavorite: false,
+            modifiedAt: 0,
+            key: 'No files',
+            size: 0
+            }
+            var thisItemProps = {
+              ...browserProps.getItemProps(file, browserProps),
+              depth: 0,
+            };
+            contents = (
+              <this.props.fileRenderer
+                {...file}
+                {...thisItemProps}
+                browserProps={browserProps}
+              />
+            )
+          //}
+          // else {
+          //   contents = (<tr>
+          //     <td colSpan="100">
+          //       No files.
+          //     </td>
+          //   </tr>);
+          // }
         }
         else {
           if (this.state.nameFilter) {
@@ -734,9 +823,9 @@ class FileBrowser extends React.Component {
       <div className="rendered-react-keyed-file-browser">
         {this.props.actions}
         <div className="rendered-file-browser" ref="browser">
-          <div id="filebrowser-mask" className="FileBrowser__mask hidden" ref="filebrowser-mask"></div>
           {this.props.showActionBar && this.renderActionBar(selectedItem)}
-          <div className="files">
+
+          <div id={this.props.connectionKey} className="files">
             {renderedFiles}
           </div>
         </div>
@@ -798,6 +887,6 @@ FileBrowser.PropTypes = {
   onDeleteFile: PropTypes.func,
 };
 
-export default DragDropContext(HTML5Backend)(FileBrowser)
+export default DragDropContext(backend)(FileBrowser)
 export { BaseFile, BaseFileConnectors }
 export { BaseFolder, BaseFolderConnectors }

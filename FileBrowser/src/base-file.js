@@ -11,17 +11,17 @@ class BaseFile extends React.Component {
   constructor(props) {
     super(props);
 
-    this.handleFileClick = this.handleFileClick.bind(this)
-    this.handleItemClick = this.handleItemClick.bind(this)
-    this.handleItemDoubleClick = this.handleItemDoubleClick.bind(this)
-    this.handleRenameClick = this.handleRenameClick.bind(this)
-    this.handleNewNameChange = this.handleNewNameChange.bind(this)
-    this.handleRenameSubmit = this.handleRenameSubmit.bind(this)
-    this.handleDeleteClick = this.handleDeleteClick.bind(this)
-    this.handleDeleteSubmit = this.handleDeleteSubmit.bind(this)
-    this.handleCancelEdit = this.handleCancelEdit.bind(this)
+    this.handleFileClick = this.handleFileClick.bind(this);
+    this.handleItemClick = this.handleItemClick.bind(this);
+    this.handleItemDoubleClick = this.handleItemDoubleClick.bind(this);
+    this.handleRenameClick = this.handleRenameClick.bind(this);
+    this.handleNewNameChange = this.handleNewNameChange.bind(this);
+    this.handleRenameSubmit = this.handleRenameSubmit.bind(this);
+    this.handleDeleteClick = this.handleDeleteClick.bind(this);
+    this.handleDeleteSubmit = this.handleDeleteSubmit.bind(this);
+    this.handleCancelEdit = this.handleCancelEdit.bind(this);
 
-    this.connectDND = this.connectDND.bind(this)
+    this.connectDND = this.connectDND.bind(this);
 
     this.state = {
       ...this.state,
@@ -76,7 +76,7 @@ class BaseFile extends React.Component {
       url: this.props.url,
       name: this.getName(),
       key: this.props.fileKey,
-      extension: this.getExtension(),
+      extension: this.getExtension()
     });
   }
   handleItemClick(event) {
@@ -177,17 +177,39 @@ const dragSource = {
   },
 
   endDrag(props, monitor, component) {
+    
     if (!monitor.didDrop())
       return;
 
     const item = monitor.getItem();
     const dropResult = monitor.getDropResult();
+
     var fileNameParts = props.fileKey.split('/');
+
     var fileName = fileNameParts[fileNameParts.length - 1];
-    var newKey = `${dropResult.path ? dropResult.path + '/' : ''}${fileName}`;
-    if (newKey != props.fileKey && props.browserProps.renameFile) {
-      props.browserProps.openFolder(dropResult.path + '/');
-      props.browserProps.renameFile(props.fileKey, newKey);
+
+    let pathArray = dropResult.fileKey.split('/')
+    pathArray.pop()
+    let path = pathArray.join('/')
+
+    var newKey = `${path ? path + '/' : '' }${fileName}`;
+
+    let newKeyArray = dropResult.newKey.split('/')
+    let fileKeyArray = props.fileKey.split('/')
+
+    newKeyArray.pop()
+    fileKeyArray.pop()
+
+    let newKeyPath = newKeyArray.join('/')
+    let fileKeyPath= fileKeyArray.join('/')
+
+    newKeyPath = newKeyPath.replace(/\/\/\/g/, '/')
+
+    if(newKeyPath !== fileKeyPath){
+      if ((newKey != props.fileKey) && props.browserProps.renameFile) {
+        props.browserProps.openFolder(dropResult.path + '/');
+        props.browserProps.renameFile(props.fileKey, newKey);
+      }
     }
   },
 };
@@ -202,20 +224,55 @@ function dragCollect(connect, monitor) {
 
 const targetSource = {
   drop(props, monitor) {
-    if (monitor.didDrop()) {
-      return;
-    }
-    var key = props.newKey || props.fileKey;
-    var path = key.substr(0, key.lastIndexOf('/') || key.length);
-    var item = monitor.getItem();
-    if (item.files && props.browserProps.createFiles) {
-      props.browserProps.createFiles(item.files, path + '/');
-    }
-    console.log(item.files, monitor)
-    return {
-      path: path,
-      props: props
-    };
+    const dndItem = monitor.getItem();
+
+    if (dndItem) {
+          if (!dndItem.dirContent) {
+              var fileKey = props.browserProps.selection;
+
+              var fileNameParts = fileKey.split('/')
+              var fileName = fileNameParts[fileNameParts.length - 1];
+              var newKey = props.newKey || props.fileKey;
+              var newPath = newKey +  fileName
+
+              return {
+                newKey: newPath,
+                fileKey: props.fileKey
+              };
+          }
+          else {
+              dndItem.dirContent.then((files: Object[]) => {
+                  if (files.length){
+                    var key = props.newKey || props.fileKey;
+                    var path = key.substr(0, key.lastIndexOf('/') || key.length);
+
+                     // handle dragged folder(s)
+                     if (files && props.browserProps.createFiles) {
+                          props.browserProps.createFiles(files, path + '/');
+                        }
+                     return{
+                       files: files,
+                       path: path
+                     }
+                  }
+                  else if (dndItem.files && dndItem.files.length){
+                       //handle dragged files
+                       var key = props.newKey || props.fileKey;
+                       var path = key.substr(0, key.lastIndexOf('/') || key.length);
+                       var item = monitor.getItem();
+                       if (item.files && props.browserProps.createFiles) {
+                         props.browserProps.createFiles(item.files, path + '/');
+                       }
+
+                       return {
+                         path: path
+                       };
+                  }
+              });
+          }
+      }
+
+
   },
 };
 

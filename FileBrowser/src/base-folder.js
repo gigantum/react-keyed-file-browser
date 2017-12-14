@@ -4,20 +4,20 @@ class BaseFolder extends React.Component {
   constructor(props) {
     super(props);
 
-    this.selectAllNewName = this.selectAllNewName.bind(this)
+    this.selectAllNewName = this.selectAllNewName.bind(this);
 
-    this.handleFolderClick = this.handleFolderClick.bind(this)
-    this.handleFolderDoubleClick = this.handleFolderDoubleClick.bind(this)
-    this.handleRenameClick = this.handleRenameClick.bind(this)
-    this.handleNewNameChange = this.handleNewNameChange.bind(this)
-    this.handleRenameSubmit = this.handleRenameSubmit.bind(this)
-    this.handleDeleteClick = this.handleDeleteClick.bind(this)
-    this.handleDeleteSubmit = this.handleDeleteSubmit.bind(this)
-    this.handleCancelEdit = this.handleCancelEdit.bind(this)
+    this.handleFolderClick = this.handleFolderClick.bind(this);
+    this.handleFolderDoubleClick = this.handleFolderDoubleClick.bind(this);
+    this.handleRenameClick = this.handleRenameClick.bind(this);
+    this.handleNewNameChange = this.handleNewNameChange.bind(this);
+    this.handleRenameSubmit = this.handleRenameSubmit.bind(this);
+    this.handleDeleteClick = this.handleDeleteClick.bind(this);
+    this.handleDeleteSubmit = this.handleDeleteSubmit.bind(this);
+    this.handleCancelEdit = this.handleCancelEdit.bind(this);
 
-    this.toggleFolder = this.toggleFolder.bind(this)
+    this.toggleFolder = this.toggleFolder.bind(this);
 
-    this.connectDND = this.connectDND.bind(this)
+    this.connectDND = this.connectDND.bind(this);
 
     this.state = {
       ...this.state,
@@ -169,19 +169,16 @@ const dragSource = {
 
     const item = monitor.getItem();
     const dropResult = monitor.getDropResult();
+    const oldKey = item.key;
+    const oldKeyFolders =  oldKey.split('/');
 
-    var fileNameParts = props.fileKey.split('/');
-    var folderName = fileNameParts[fileNameParts.length - 2];
-    var folderPath = props.fileKey.substr(0, props.fileKey.length - (folderName.length + 2));
 
-    var newKey = `${dropResult.path ? dropResult.path + '/' : ''}${folderName}/`;
-    // abort of the new folder name contains itself
-    if (newKey.substr(0, props.fileKey.length) === props.fileKey)
-      return;
+    var folder = (oldKeyFolders[oldKeyFolders.length - 1] === "") ? oldKeyFolders[oldKeyFolders.length - 2] : oldKeyFolders[oldKeyFolders.length - 1];
+    var newKey = dropResult.fileKey + folder + '/'
 
-    if (newKey != props.fileKey && props.browserProps.renameFolder) {
-      props.browserProps.openFolder(dropResult.path + '/');
-      props.browserProps.renameFolder(props.fileKey, newKey);
+    if (dropResult.fileKey !== item.key && props.browserProps.renameFolder) {
+      props.browserProps.openFolder(item.key);
+      props.browserProps.renameFolder(oldKey, newKey);
     }
   },
 };
