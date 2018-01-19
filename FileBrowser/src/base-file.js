@@ -185,12 +185,31 @@ const dragSource = {
     const dropResult = monitor.getDropResult();
 
     var fileNameParts = props.fileKey.split('/');
-    var fileName = fileNameParts[fileNameParts.length - 1];
-    var newKey = `${dropResult.path ? dropResult.path + '/' : ''}${fileName}`;
 
-    if ((dropResult.newKey != props.fileKey) && props.browserProps.renameFile) {
-      props.browserProps.openFolder(dropResult.path + '/');
-      props.browserProps.renameFile(props.fileKey, dropResult.newKey);
+    var fileName = fileNameParts[fileNameParts.length - 1];
+
+    let pathArray = dropResult.fileKey.split('/')
+    pathArray.pop()
+    let path = pathArray.join('/')
+
+    var newKey = `${path ? path + '/' : '' }${fileName}`;
+
+    let newKeyArray = dropResult.newKey.split('/')
+    let fileKeyArray = props.fileKey.split('/')
+
+    newKeyArray.pop()
+    fileKeyArray.pop()
+
+    let newKeyPath = newKeyArray.join('/')
+    let fileKeyPath= fileKeyArray.join('/')
+
+    newKeyPath = newKeyPath.replace(/\/\/\/g/, '/')
+
+    if(newKeyPath !== fileKeyPath){
+      if ((newKey != props.fileKey) && props.browserProps.renameFile) {
+        props.browserProps.openFolder(dropResult.path + '/');
+        props.browserProps.renameFile(props.fileKey, newKey);
+      }
     }
   },
 };
@@ -241,7 +260,9 @@ const targetSource = {
                        var key = props.newKey || props.fileKey;
                        var path = key.substr(0, key.lastIndexOf('/') || key.length);
                        var item = monitor.getItem();
+
                        if (item && item.files && props.browserProps.createFiles) {
+
                          props.browserProps.createFiles(item.files, path + '/');
                        }
 
