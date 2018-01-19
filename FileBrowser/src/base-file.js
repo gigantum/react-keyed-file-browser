@@ -210,7 +210,7 @@ const targetSource = {
     if (dndItem) {
           if (!dndItem.dirContent) {
               var fileKey = props.browserProps.selection;
-      
+
               var fileNameParts = fileKey.split('/')
               var fileName = fileNameParts[fileNameParts.length - 1];
               var newKey = props.newKey || props.fileKey;
@@ -241,7 +241,7 @@ const targetSource = {
                        var key = props.newKey || props.fileKey;
                        var path = key.substr(0, key.lastIndexOf('/') || key.length);
                        var item = monitor.getItem();
-                       if (item.files && props.browserProps.createFiles) {
+                       if (item && item.files && props.browserProps.createFiles) {
                          props.browserProps.createFiles(item.files, path + '/');
                        }
 
