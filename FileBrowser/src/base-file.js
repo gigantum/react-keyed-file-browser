@@ -177,7 +177,7 @@ const dragSource = {
   },
 
   endDrag(props, monitor, component) {
-    
+
     if (!monitor.didDrop())
       return;
 
@@ -260,6 +260,7 @@ const targetSource = {
                        var key = props.newKey || props.fileKey;
                        var path = key.substr(0, key.lastIndexOf('/') || key.length);
                        var item = monitor.getItem();
+                       console.log(item)
                        if (item.files && props.browserProps.createFiles) {
                          props.browserProps.createFiles(item.files, path + '/');
                        }
