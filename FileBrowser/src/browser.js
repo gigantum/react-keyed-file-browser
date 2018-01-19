@@ -211,6 +211,7 @@ class FileBrowser extends React.Component {
     });
   }
   createFiles(files, prefix) {
+
     var fixedPrefix = (prefix === '/') ? '': prefix
     this.setState(state => {
       state.openFolders = {
@@ -294,7 +295,7 @@ class FileBrowser extends React.Component {
         state.openFolders[folderKey] = true;
       return state;
     });
-    this.props.toggleFolder(folderKey);
+    //this.props.toggleFolder(folderKey);
   }
   openFolder(folderKey) {
     this.setState(state => {

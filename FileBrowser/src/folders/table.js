@@ -28,7 +28,9 @@ class TableFolder extends BaseFolder {
             download="download"
             onClick={(event) => {
               event.preventDefault();
-              this.handleFileClick();
+              if(this.handleFileClick){
+                this.handleFileClick();
+              }
             }}
           >
             {icon}
