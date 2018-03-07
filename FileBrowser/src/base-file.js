@@ -83,6 +83,10 @@ class BaseFile extends React.Component {
     event.stopPropagation();
     this.props.browserProps.select(this.props.fileKey);
   }
+
+  handleFileFavoriting(event, props) {
+    this.props.browserProps.handleFileFavoriting(event, props);
+  }
   handleItemDoubleClick(event) {
     event.stopPropagation();
     this.handleFileClick();

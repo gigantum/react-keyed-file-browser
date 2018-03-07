@@ -121,7 +121,8 @@ class TableFile extends BaseFile {
             {draggable}
           </div>
         </td>
-        <td width="30"><div className={this.props.isFavorite ? 'Favorite__star--file' : ''}></div></td>
+        <td width="30"><div
+          onClick={(evt)=>this.handleFileFavoriting(evt, this.props)} className={this.props.isFavorite ? 'Favorite__star--file' : 'Favorite__star--empty'}></div></td>
         <td className="size">{file_size(this.props.size)}</td>
         <td className="modified">
           {typeof this.props.modified === 'undefined' ? '-' : Moment((this.props.modified * 1000), 'x').fromNow()}
