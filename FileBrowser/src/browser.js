@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 // drag and drop
-//import HTML5Backend from 'react-dnd-html5-backend'
 import { DragDropContext } from 'react-dnd'
 import {getFilesFromDragEvent, getFiles} from "./html-dir-content";
 // base renderers
@@ -340,7 +339,7 @@ class FileBrowser extends React.Component {
   }
 
   handleFileFavoriting(event, props){
-  
+
     event.preventDefault();
 
     let fileItem = props ? props.fileKey : this.state.selection;
