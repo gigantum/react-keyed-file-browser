@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 // drag and drop
-import HTML5Backend from 'react-dnd-html5-backend'
 import { DragDropContext } from 'react-dnd'
 import {getFilesFromDragEvent, getFiles} from "./html-dir-content";
 // base renderers
@@ -21,25 +20,6 @@ import SortByName from './sorters/by-name.js'
 import prettyFileIcons from 'pretty-file-icons'
 
 const SEARCH_RESULTS_PER_PAGE = 20;
-
-
-const backend = (manager: Object) => {
-    const backend = HTML5Backend(manager),
-        orgTopDropCapture = backend.handleTopDropCapture;
-
-    backend.handleTopDropCapture = (e) => {
-
-        let datatransfer = e.dataTransfer.getData('data');
-
-        if(backend.currentNativeSource){
-          orgTopDropCapture.call(backend, e);
-          backend.currentNativeSource.item.dirContent = getFilesFromDragEvent(e, {recursive: true}); //returns a promise
-        }
-    };
-
-    return backend;
-}
-
 
 function getItemProps(file, browserProps) {
 
@@ -304,6 +284,8 @@ class FileBrowser extends React.Component {
     });
   }
 
+
+
   // event handlers
   handleGlobalClick(event) {
     var inBrowser = !!(this.refs.browser.contains(event.target));
@@ -356,10 +338,12 @@ class FileBrowser extends React.Component {
     });
   }
 
-  handleFileFavoriting(event){
+  handleFileFavoriting(event, props){
+
     event.preventDefault();
 
-    this.props.onFileFavoriting(this.state.selection)
+    let fileItem = props ? props.fileKey : this.state.selection;
+    this.props.onFileFavoriting(fileItem)
   }
 
   handleFileDuplication(event){
@@ -412,6 +396,8 @@ class FileBrowser extends React.Component {
       createFolder: this.props.onCreateFolder ? this.createFolder : undefined,
       deleteFile: this.props.onDeleteFile ? this.deleteFile : undefined,
       deleteFolder: this.props.onDeleteFolder ? this.deleteFolder : undefined,
+
+      handleFileFavoriting: this.handleFileFavoriting,
 
       getItemProps: getItemProps,
     };
@@ -887,7 +873,6 @@ FileBrowser.PropTypes = {
   onDeleteFolder: PropTypes.func,
   onDeleteFile: PropTypes.func,
 };
-
-export default DragDropContext(backend)(FileBrowser)
+export default FileBrowser
 export { BaseFile, BaseFileConnectors }
 export { BaseFolder, BaseFolderConnectors }
