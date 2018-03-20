@@ -211,7 +211,7 @@ const targetSource = {
     if (item.files && props.browserProps.createFiles) {
       props.browserProps.createFiles(item.files, path + '/');
     }
-    console.log(item.files, monitor)
+
     return {
       path: path,
       props: props
