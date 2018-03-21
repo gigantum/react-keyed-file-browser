@@ -339,7 +339,6 @@ class FileBrowser extends React.Component {
   }
 
   handleFileFavoriting(event, props){
-
     event.preventDefault();
 
     let fileItem = props ? props.fileKey : this.state.selection;
@@ -844,7 +843,7 @@ FileBrowser.defaultProps = {
   fileRenderer: TableFile,
   detailRenderer: DefaultDetail,
 };
-FileBrowser.PropTypes = {
+FileBrowser.propTypes = {
   showActionBar: PropTypes.bool.isRequired,
   canFilter: PropTypes.bool.isRequired,
 
