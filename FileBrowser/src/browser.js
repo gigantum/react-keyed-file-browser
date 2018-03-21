@@ -23,7 +23,7 @@ const SEARCH_RESULTS_PER_PAGE = 20;
 function getItemProps(file, browserProps) {
 
   return {
-    key: `file-${this.keyPrefix}-${file.key}`,
+    key: file.id,
     fileKey: file.key,
     isSelected: (file.key == browserProps.selection),
     isOpen: (
@@ -587,7 +587,9 @@ class FileBrowser extends React.Component {
   renderFiles(files, depth) {
     var browserProps = this.getBrowserProps();
     var renderedFiles = [];
+
     files.map((file) => {
+
       var thisItemProps = {
         ...browserProps.getItemProps(file, browserProps),
         depth: this.state.nameFilter ? 0 : depth,
@@ -620,6 +622,7 @@ class FileBrowser extends React.Component {
     return renderedFiles;
   }
   render() {
+
     var renderedFiles;
     var browserProps = this.getBrowserProps();
     var headerProps = {
@@ -638,6 +641,7 @@ class FileBrowser extends React.Component {
     if (this.state.nameFilter) {
       var filteredFiles = [];
       var terms = this.state.nameFilter.split(' ');
+
       files.map((file) => {
         var skip = false;
         terms.map((term) => {
@@ -659,6 +663,7 @@ class FileBrowser extends React.Component {
     else {
       var newFiles = [];
       files.map((file) => {
+    
         if (file.size) {
           newFiles.push(file);
         }
