@@ -2,7 +2,6 @@ import React from 'react'
 import PropTypes from 'prop-types'
 // drag and drop
 import { DragDropContext } from 'react-dnd'
-import {getFilesFromDragEvent, getFiles} from "./html-dir-content";
 // base renderers
 import BaseFolder from './base-folder.js'
 import { BaseFolderConnectors } from './base-folder.js'
