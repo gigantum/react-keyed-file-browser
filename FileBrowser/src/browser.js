@@ -2,7 +2,6 @@ import React from 'react'
 import PropTypes from 'prop-types'
 // drag and drop
 import { DragDropContext } from 'react-dnd'
-import {getFilesFromDragEvent, getFiles} from "./html-dir-content";
 // base renderers
 import BaseFolder from './base-folder.js'
 import { BaseFolderConnectors } from './base-folder.js'
@@ -339,7 +338,6 @@ class FileBrowser extends React.Component {
   }
 
   handleFileFavoriting(event, props){
-
     event.preventDefault();
 
     let fileItem = props ? props.fileKey : this.state.selection;
@@ -844,7 +842,7 @@ FileBrowser.defaultProps = {
   fileRenderer: TableFile,
   detailRenderer: DefaultDetail,
 };
-FileBrowser.PropTypes = {
+FileBrowser.propTypes = {
   showActionBar: PropTypes.bool.isRequired,
   canFilter: PropTypes.bool.isRequired,
 
