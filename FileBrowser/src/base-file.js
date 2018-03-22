@@ -43,6 +43,7 @@ class BaseFile extends React.Component {
 
   getName() {
     var name = this.props.newKey || this.props.fileKey;
+
     var slashIndex = name.lastIndexOf('/');
     if (slashIndex != -1) {
       name = name.substr(slashIndex + 1);

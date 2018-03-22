@@ -104,31 +104,46 @@ class TableFile extends BaseFile {
       draggable = this.props.connectDragPreview(draggable);
     }
     const modifier = (this.props.modified === 0) ? ' modified grey' : ' modified'
-
-    var row = (
-      <tr
-        className={ClassNames('file', {
-          pending: (this.props.action),
-          dragging: (this.props.isDragging),
-          dragover: (this.props.isOver),
-          selected: (this.props.isSelected),
-        }) + modifier}
-        onClick={this.handleItemClick}
-        onDoubleClick={this.handleItemDoubleClick}
-      >
-        <td className="name">
-          <div style={{paddingLeft: (this.props.depth * 16) + 'px'}}>
-            {draggable}
-          </div>
-        </td>
-        <td width="30"><div
-          onClick={(evt)=>this.handleFileFavoriting(evt, this.props)} className={this.props.isFavorite ? 'Favorite__star--file' : 'Favorite__star--empty'}></div></td>
-        <td className="size">{file_size(this.props.size)}</td>
-        <td className="modified">
-          {typeof this.props.modified === 'undefined' ? '-' : Moment((this.props.modified * 1000), 'x').fromNow()}
-        </td>
-      </tr>
-    );
+    var row;
+    if(this.props.hasFiles){
+      row = (
+        <tr
+          className={ClassNames('file', {
+            pending: (this.props.action),
+            dragging: (this.props.isDragging),
+            dragover: (this.props.isOver),
+            selected: (this.props.isSelected),
+          }) + modifier}
+          onClick={this.handleItemClick}
+          onDoubleClick={this.handleItemDoubleClick}
+        >
+          <td className="name">
+            <div style={{paddingLeft: (this.props.depth * 16) + 'px'}}>
+              {draggable}
+            </div>
+          </td>
+          <td width="30"><div
+            onClick={(evt)=>this.handleFileFavoriting(evt, this.props)} className={this.props.isFavorite ? 'Favorite__star--file' : 'Favorite__star--empty'}></div></td>
+          <td className="size">{file_size(this.props.size)}</td>
+          <td className="modified">
+            {typeof this.props.modified === 'undefined' ? '-' : Moment((this.props.modified * 1000), 'x').fromNow()}
+          </td>
+        </tr>
+      );
+    }else{
+      row = (
+        <tr
+          className={ClassNames('file', {
+            pending: (this.props.action),
+            dragging: (this.props.isDragging),
+            dragover: (this.props.isOver),
+            selected: (this.props.isSelected),
+            "FileBrowser__large-dropzone": true
+          }) + modifier}
+        >
+          <td colSpan="5">Drag and Drop files here</td>
+        </tr>)
+    }
 
     return this.connectDND(row);
   }
