@@ -211,6 +211,8 @@ class FileBrowser extends React.Component {
       state.actionTarget = null;
       state.selection = key;
     }, this.props.onCreateFolder(key));
+
+    this.openFolder(key)
   }
   deleteFile(key) {
     this.props.onDeleteFile(key);
@@ -584,20 +586,21 @@ class FileBrowser extends React.Component {
       </div>
     );
   }
-  renderFiles(files, depth) {
+  renderFiles(files, depth, totalFileLength) {
     var browserProps = this.getBrowserProps();
     var renderedFiles = [];
 
     files.map((file) => {
-
       var thisItemProps = {
         ...browserProps.getItemProps(file, browserProps),
         depth: this.state.nameFilter ? 0 : depth,
       };
+      let lastCharacter = file.key.slice((file.key.length - 1), file.key.length)
 
-      if (file.size) {
+      if (file.size || (lastCharacter !== '/')) {
         renderedFiles.push(
           <this.props.fileRenderer
+            hasFiles={true}
             {...file}
             {...thisItemProps}
             browserProps={browserProps}
@@ -619,6 +622,30 @@ class FileBrowser extends React.Component {
         }
       }
     });
+
+    if(totalFileLength === 0){
+      let file = {
+        key: `test.js`,
+        modified: 0,
+        size: 1,
+        isFavorite: false,
+        id: 'nofiles_dropzone'
+      }
+      var thisItemProps = {
+        ...browserProps.getItemProps(file, browserProps),
+        depth: this.state.nameFilter ? 0 : depth,
+      };
+
+      renderedFiles.push(
+        <this.props.fileRenderer
+          hasFiles={false}
+          {...thisItemProps}
+          {...file}
+          browserProps={browserProps}
+        />
+      )
+
+    }
     return renderedFiles;
   }
   render() {
@@ -631,6 +658,8 @@ class FileBrowser extends React.Component {
     };
     var files = this.props.files.concat([]);
 
+    var totalFileLength = files.length
+
     if (this.state.activeAction === 'createFolder') {
       files.push({
         key: this.state.actionTarget,
@@ -638,6 +667,7 @@ class FileBrowser extends React.Component {
         draft: true,
       });
     }
+
     if (this.state.nameFilter) {
       var filteredFiles = [];
       var terms = this.state.nameFilter.split(' ');
@@ -645,6 +675,7 @@ class FileBrowser extends React.Component {
       files.map((file) => {
         var skip = false;
         terms.map((term) => {
+
           if (file.key.toLowerCase().trim().indexOf(term) == -1) {
             skip = true;
             return;
@@ -657,14 +688,16 @@ class FileBrowser extends React.Component {
       });
       files = filteredFiles;
     }
+
     if (typeof this.props.group === 'function') {
       files = this.props.group(files, '');
     }
     else {
+
       var newFiles = [];
       files.map((file) => {
-    
-        if (file.size) {
+
+        if (file.size ) {
           newFiles.push(file);
         }
       });
@@ -679,24 +712,26 @@ class FileBrowser extends React.Component {
         item.children.map(findSelected);
       }
     }
+
     files.map(findSelected);
+
     if (typeof this.props.sort === 'function') {
       files = this.props.sort(files);
     }
 
     switch (this.props.renderStyle) {
       case 'table':
-        var contents = this.renderFiles(files, 0);
+        var contents = this.renderFiles(files, 0, totalFileLength);
 
         if (!contents.length) {
           //if (this.state.nameFilter) {
             var file = {
-            id: 'id',
-            isDir: false,
-            isFavorite: false,
-            modifiedAt: 0,
-            key: 'No files',
-            size: 0
+              id: 'id',
+              isDir: false,
+              isFavorite: false,
+              modifiedAt: 0,
+              key: 'No files',
+              size: 0
             }
             var thisItemProps = {
               ...browserProps.getItemProps(file, browserProps),
@@ -704,19 +739,12 @@ class FileBrowser extends React.Component {
             };
             contents = (
               <this.props.fileRenderer
+                hasFiles={true}
                 {...file}
                 {...thisItemProps}
                 browserProps={browserProps}
               />
             )
-          //}
-          // else {
-          //   contents = (<tr>
-          //     <td colSpan="100">
-          //       No files.
-          //     </td>
-          //   </tr>);
-          // }
         }
         else {
           if (this.state.nameFilter) {
@@ -760,7 +788,7 @@ class FileBrowser extends React.Component {
         break;
 
       case 'list':
-        var contents = this.renderFiles(files, 0);
+        var contents = this.renderFiles(files, 0, totalFileLength);
         if (!contents.length) {
           if (this.state.nameFilter)
             contents = (<p className="empty">No files matching "{this.state.nameFilter}"</p>);

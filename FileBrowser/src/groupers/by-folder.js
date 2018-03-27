@@ -9,7 +9,9 @@ export default function(files, root) {
     var currentFolder = fileTree;
     var folders = file.relativeKey.split('/');
     folders.map((folder, folderIndex) => {
-      if (folderIndex == folders.length - 1 && !file.size) {
+      let lastCharacter = file.key.slice((file.key.length - 1), file.key.length)
+
+      if ((folderIndex === folders.length - 1) && !((lastCharacter !== '/') || (file.size > 0))) {
         for (var key in file) {
           currentFolder[key] = file[key];
         }
@@ -17,7 +19,7 @@ export default function(files, root) {
       if (folder == '') {
         return;
       }
-      var isAFile = (file.size && (folderIndex == folders.length - 1))
+      var isAFile = ((file.size || (lastCharacter !== '/')) && (folderIndex == folders.length - 1))
       if (isAFile) {
         currentFolder.contents.push({
           ...file,
