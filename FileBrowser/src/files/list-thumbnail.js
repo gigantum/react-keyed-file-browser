@@ -1,4 +1,3 @@
-
 import React from 'react'
 import Moment from 'moment'
 import ClassNames from 'classnames'
@@ -84,7 +83,8 @@ class ListFile extends BaseFile {
       if (!this.props.isRenaming && !this.props.isDeleting) {
         modified = (
           <span className="modified text-muted">
-            Last modified: {Moment(this.props.modified).fromNow()}
+
+            Last modified: {Moment((this.props.modified * 1000), 'x').fromNow()}
           </span>
         );
       }
@@ -137,7 +137,7 @@ export default DragSource(
   BaseFileConnectors.dragCollect
 )(
   DropTarget(
-    ['file', 'folder', NativeTypes.FILE],
+    ['file', 'folder', NativeTypes.FILE,  NativeTypes.FOLDER],
     BaseFileConnectors.targetSource,
     BaseFileConnectors.targetCollect
   )(
